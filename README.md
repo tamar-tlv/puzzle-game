@@ -12,10 +12,10 @@ An interactive puzzle game built with Angular 18 featuring an attractive visual 
 
 📸 **Custom Image Upload** - Upload your own images to create personalized puzzles
 
-🖼️ **Default Paintings** - Select from beautiful classic paintings including:
-- Van Gogh's "Starry Night"
-- Edvard Munch's "The Scream"
-- Vermeer's "Girl with a Pearl Earring"
+🎨 **Default Patterns** - Select from beautiful gradient patterns:
+- Purple/Blue gradient with geometric shapes
+- Pink/Red gradient with decorative elements
+- Cyan/Turquoise gradient with modern design
 
 🔗 **Share Links** - Generate shareable links to show off your puzzle completion stats
 
@@ -62,7 +62,7 @@ The build artifacts will be stored in the `dist/` directory.
 1. **Choose Your Settings**:
    - Select a difficulty level (Easy, Medium, or Hard)
    - Adjust the number of pieces using the slider
-   - Upload a custom image OR select a default painting
+   - Upload a custom image OR select a default gradient pattern
 
 2. **Start the Game**:
    - Click the "Start Game" button

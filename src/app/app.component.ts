@@ -54,16 +54,18 @@ export class AppComponent {
   }
   
   createPlaceholderImage(color1: string, color2: string): string {
+    // Create a unique ID without special characters
+    const gradId = 'grad' + Math.random().toString(36).substr(2, 9);
     // Create a data URI with a colorful pattern
     const svg = `
       <svg width="600" height="600" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="grad${color1}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" style="stop-color:${color1};stop-opacity:1" />
             <stop offset="100%" style="stop-color:${color2};stop-opacity:1" />
           </linearGradient>
         </defs>
-        <rect width="600" height="600" fill="url(#grad${color1})"/>
+        <rect width="600" height="600" fill="url(#${gradId})"/>
         <circle cx="150" cy="150" r="80" fill="rgba(255,255,255,0.2)"/>
         <circle cx="450" cy="450" r="120" fill="rgba(255,255,255,0.15)"/>
         <circle cx="450" cy="150" r="60" fill="rgba(255,255,255,0.1)"/>
@@ -99,6 +101,13 @@ export class AppComponent {
   
   onPieceCountChange() {
     this.updateGridSize();
+    // Validate that piece count makes a valid square
+    const sqrt = Math.sqrt(this.pieceCount);
+    if (sqrt !== Math.floor(sqrt)) {
+      // Round to nearest perfect square
+      const nearest = Math.round(sqrt);
+      this.pieceCount = nearest * nearest;
+    }
   }
   
   updateGridSize() {
@@ -217,12 +226,24 @@ export class AppComponent {
       hasCustomImage: !!this.customImage
     };
     
-    const encoded = btoa(JSON.stringify(gameData));
+    // Use encodeURIComponent to safely encode the JSON string
+    const encoded = encodeURIComponent(JSON.stringify(gameData));
     this.shareLink = `${window.location.origin}${window.location.pathname}?game=${encoded}`;
   }
   
   copyShareLink() {
     navigator.clipboard.writeText(this.shareLink).then(() => {
+      // Simple success feedback without blocking UI
+      const button = document.activeElement as HTMLElement;
+      const originalText = button?.textContent || '';
+      if (button) {
+        button.textContent = '✅ Copied!';
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      }
+    }).catch(() => {
+      // Fallback for browsers that don't support clipboard API
       alert('Share link copied to clipboard!');
     });
   }
