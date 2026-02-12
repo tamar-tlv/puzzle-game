@@ -24,14 +24,10 @@ export class AppComponent {
   pieceCount: number = 9;
   customImage: string | null = null;
   
-  // Default images
-  defaultImages = [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg/800px-Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/800px-1665_Girl_with_a_Pearl_Earring.jpg'
-  ];
+  // Default images - initialized in ngOnInit
+  defaultImages: string[] = [];
   
-  selectedDefaultImage: string = this.defaultImages[0];
+  selectedDefaultImage: string = '';
   
   // Game state
   gameStarted = false;
@@ -48,6 +44,36 @@ export class AppComponent {
   
   ngOnInit() {
     this.updateGridSize();
+    // Initialize default images with placeholders
+    this.defaultImages = [
+      this.createPlaceholderImage('#667eea', '#764ba2'),
+      this.createPlaceholderImage('#f093fb', '#f5576c'),
+      this.createPlaceholderImage('#4facfe', '#00f2fe')
+    ];
+    this.selectedDefaultImage = this.defaultImages[0];
+  }
+  
+  createPlaceholderImage(color1: string, color2: string): string {
+    // Create a data URI with a colorful pattern
+    const svg = `
+      <svg width="600" height="600" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad${color1}" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:${color1};stop-opacity:1" />
+            <stop offset="100%" style="stop-color:${color2};stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="600" height="600" fill="url(#grad${color1})"/>
+        <circle cx="150" cy="150" r="80" fill="rgba(255,255,255,0.2)"/>
+        <circle cx="450" cy="450" r="120" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="450" cy="150" r="60" fill="rgba(255,255,255,0.1)"/>
+        <circle cx="150" cy="450" r="90" fill="rgba(255,255,255,0.12)"/>
+        <circle cx="300" cy="300" r="100" fill="rgba(255,255,255,0.08)"/>
+        <rect x="100" y="500" width="400" height="20" fill="rgba(255,255,255,0.15)"/>
+        <rect x="500" y="100" width="20" height="400" fill="rgba(255,255,255,0.15)"/>
+      </svg>
+    `;
+    return 'data:image/svg+xml;base64,' + btoa(svg);
   }
   
   ngOnDestroy() {
