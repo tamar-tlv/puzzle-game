@@ -1,0 +1,159 @@
+<div class="container">
+  <header class="header">
+    <h1>🧩 Puzzle Game</h1>
+    <p class="subtitle">Create and solve beautiful puzzles</p>
+  </header>
+
+  <div class="game-wrapper" *ngIf="!gameStarted">
+    <div class="settings-panel">
+      <h2>Game Settings</h2>
+      
+      <!-- Difficulty Selection -->
+      <div class="setting-group">
+        <label>Difficulty Level</label>
+        <div class="button-group">
+          <button 
+            class="btn-option" 
+            [class.active]="difficulty === 'easy'"
+            (click)="difficulty = 'easy'; onDifficultyChange()">
+            Easy (3x3)
+          </button>
+          <button 
+            class="btn-option" 
+            [class.active]="difficulty === 'medium'"
+            (click)="difficulty = 'medium'; onDifficultyChange()">
+            Medium (4x4)
+          </button>
+          <button 
+            class="btn-option" 
+            [class.active]="difficulty === 'hard'"
+            (click)="difficulty = 'hard'; onDifficultyChange()">
+            Hard (5x5)
+          </button>
+        </div>
+      </div>
+
+      <!-- Piece Count Selection -->
+      <div class="setting-group">
+        <label for="pieceCount">Number of Pieces: {{ pieceCount }}</label>
+        <input 
+          type="range" 
+          id="pieceCount" 
+          [(ngModel)]="pieceCount"
+          (ngModelChange)="onPieceCountChange()"
+          min="4" 
+          max="36" 
+          step="1"
+          class="slider">
+        <small>Grid: {{ gridSize }}x{{ gridSize }}</small>
+      </div>
+
+      <!-- Image Selection -->
+      <div class="setting-group">
+        <label>Choose Image</label>
+        
+        <div class="image-selection">
+          <h3>Upload Custom Image</h3>
+          <input 
+            type="file" 
+            accept="image/*" 
+            (change)="onImageUpload($event)"
+            class="file-input"
+            id="fileInput">
+          <label for="fileInput" class="file-label">
+            <span *ngIf="!customImage">📁 Choose File</span>
+            <span *ngIf="customImage">✅ Image Uploaded</span>
+          </label>
+          
+          <div *ngIf="customImage" class="preview-image">
+            <img [src]="customImage" alt="Custom image preview">
+          </div>
+        </div>
+
+        <div class="or-divider">OR</div>
+
+        <div class="image-selection">
+          <h3>Select Default Pattern</h3>
+          <div class="default-images">
+            <div 
+              *ngFor="let image of defaultImages; let i = index"
+              class="default-image-option"
+              [class.selected]="selectedDefaultImage === image && !customImage"
+              (click)="onDefaultImageSelect(image)">
+              <img [src]="image" [alt]="'Painting ' + (i + 1)">
+              <div class="image-overlay">
+                <span *ngIf="selectedDefaultImage === image && !customImage">✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-large" (click)="startGame()">
+        🎮 Start Game
+      </button>
+    </div>
+  </div>
+
+  <div class="game-area" *ngIf="gameStarted">
+    <div class="game-header">
+      <div class="stats">
+        <div class="stat-item">
+          <span class="stat-label">Moves:</span>
+          <span class="stat-value">{{ moveCount }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Time:</span>
+          <span class="stat-value">{{ elapsedTime }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Pieces:</span>
+          <span class="stat-value">{{ pieceCount }}</span>
+        </div>
+      </div>
+      <button class="btn-secondary" (click)="resetGame()">🔄 New Game</button>
+    </div>
+
+    <div class="puzzle-container" [style.grid-template-columns]="'repeat(' + gridSize + ', 1fr)'">
+      <div 
+        *ngFor="let piece of puzzlePieces"
+        class="puzzle-piece"
+        draggable="true"
+        (dragstart)="onDragStart(piece)"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop(piece)"
+        [ngStyle]="getPieceStyle(piece)"
+        [class.correct]="piece.currentPosition === piece.correctPosition">
+      </div>
+    </div>
+
+    <div *ngIf="gameCompleted" class="completion-modal">
+      <div class="modal-content">
+        <h2>🎉 Congratulations!</h2>
+        <p>You completed the puzzle!</p>
+        <div class="completion-stats">
+          <p><strong>Moves:</strong> {{ moveCount }}</p>
+          <p><strong>Time:</strong> {{ elapsedTime }}</p>
+        </div>
+        
+        <div class="share-section">
+          <h3>Share Your Achievement</h3>
+          <div class="share-link-container">
+            <input 
+              type="text" 
+              [value]="shareLink" 
+              readonly 
+              class="share-link-input">
+            <button class="btn-primary" (click)="copyShareLink()">
+              📋 Copy Link
+            </button>
+          </div>
+        </div>
+        
+        <button class="btn-primary btn-large" (click)="resetGame()">
+          Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
